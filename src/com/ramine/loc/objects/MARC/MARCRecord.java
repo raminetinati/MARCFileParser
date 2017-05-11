@@ -3,6 +3,8 @@ package com.ramine.loc.objects.MARC;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.google.gson.JsonObject;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -12,7 +14,8 @@ public class MARCRecord {
 	public String leader;
 	public ArrayList<MARCControlField> controlList;
 	public ArrayList<MARCDataField> datafields;
-	
+	public 	JSONObject jsonRepresentation;
+
 	public MARCRecord() {
 		// TODO Auto-generated constructor stub
 		controlList = new ArrayList<>();
@@ -23,9 +26,69 @@ public class MARCRecord {
 	
 	
 	
+	public void loadJSONFile(JSONObject obj){
+		
+		
+		try{
+		
+			jsonRepresentation = obj;
+			
+		leader = obj.getString("leader");
+		
+		JSONArray ctrList = obj.getJSONArray("controllist");
+		
+		for(int i=0; i<ctrList.size(); i++){
+			
+			JSONObject ctr = ctrList.getJSONObject(i);
+			
+			MARCControlField field = new MARCControlField();
+			
+			field.content = ctr.getString("content");
+			field.tag = ctr.getString("tag");
+			
+			controlList.add(field);
+		}
+		
+		JSONArray datafld = obj.getJSONArray("datalist");
+		
+		for(int i=0; i<datafld.size(); i++){
+			
+			JSONObject ctr = datafld.getJSONObject(i);
+
+			MARCDataField field = new MARCDataField();
+			
+			field.ind1 = ctr.getString("ind1");
+			field.ind2 = ctr.getString("ind2");
+			field.tag = ctr.getString("tag");
+			
+			JSONArray subfields = ctr.getJSONArray("subfields");
+
+			for(int j=0; j<subfields.size(); j++){
+
+				JSONObject sf = subfields.getJSONObject(j);
+
+				MARCDataFieldSubField sub = new MARCDataFieldSubField();
+				
+				sub.code = sf.getString("code");
+				sub.content = sf.getString("content");
+				
+				field.subfields.add(sub);
+				datafields.add(field);
+			}	
+		}
+		}catch(Exception e){
+			
+			
+		}
+		
+		
+		
+	}
 	
 	
-	public JSON createJSONRecord(){
+	
+	
+	public JSONObject createJSONRecord(){
 		
 		JSONObject obj = new JSONObject();
 		
@@ -74,6 +137,11 @@ public class MARCRecord {
 		return obj;
 		
 	}
+	
+//	@Override
+//	public String toString() {
+//		return jsonRepresentation.toString();
+//	}
 	
 	
 	

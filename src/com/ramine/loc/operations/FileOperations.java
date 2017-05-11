@@ -10,11 +10,16 @@ import com.ramine.loc.objects.MARC.MARCDataField;
 import com.ramine.loc.objects.MARC.MARCDataFieldSubField;
 import com.ramine.loc.objects.MARC.MARCRecord;
 
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
 	
@@ -195,6 +200,29 @@ public class FileOperations {
 	}
 	
 	
+public  static void loadJSONObjects(String dir, ArrayList<MARCRecord> records ) {
+		
+		File folder = new File(dir);
+		
+		for (final File fileEntry : folder.listFiles()) {
+	        if (fileEntry.isDirectory()) {
+	            //listFilesForFolder(fileEntry);
+	        } else {
+	            System.out.println(fileEntry.getPath());
+	            try {
+
+	        		loadJSONObject(records,fileEntry.getPath());
+
+	            } catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	        }
+	        
+		}
+	
+	}
+	
 	
 	
 
@@ -255,6 +283,36 @@ public class FileOperations {
 	}
 	
 	
+	public static ArrayList<MARCRecord> loadJSONObject(ArrayList<MARCRecord> records, String filename){
+		
+		try{
+			FileReader fr = new FileReader(filename);
+			BufferedReader bufferedReader = new BufferedReader(fr);
+			
+			String currentLine = "";
+			while ((currentLine = bufferedReader.readLine()) != null) {
+
+				MARCRecord recrd = new MARCRecord();
+				recrd.loadJSONFile((JSONObject) JSONSerializer.toJSON(currentLine));
+				records.add(recrd);
+				
+			}
+
+			
+			
+			
+			
+		}catch(Exception e){
+			
+			//e.printStackTrace();
+		}
+		
+		
+		
+		return records;
+	}
+	
+	
 	
 	
 	public static void main(String[] args){
@@ -263,8 +321,7 @@ public class FileOperations {
 		
 
 		
-		ArrayList<MARCRecord> records = new ArrayList<>();
-		LoadAndSaveXMLFiles("data", records);
+		
 
 		
 	}
