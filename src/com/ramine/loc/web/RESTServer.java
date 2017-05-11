@@ -11,7 +11,7 @@ public class RESTServer {
 	
 	MARCCache cache;
 	
-	public RESTServer(boolean startWithCache) {
+	public RESTServer(boolean startWithCache, boolean indexRecords) {
 		
 		
 		cache = new MARCCache();
@@ -24,6 +24,13 @@ public class RESTServer {
 		}
 		
 		
+		if(indexRecords){
+			System.out.println("***INFO*** - Indexing Cached Files!");
+			cache.indexCachedRecords();
+			System.out.printf("***INFO*** - Indexed %d Cached MARC Files\n",cache.getRecordsMap_Authors().size());
+			System.out.println("***");
+		}
+		
 
 		/*
 		 * Add all the bindings!
@@ -32,6 +39,7 @@ public class RESTServer {
 		getAllResources();
 		getResultsFromIndx();
 		getResultsFromKeywordSearch();
+		getResultsFromAuthorSearch();
 	}
 	
 	
@@ -78,4 +86,18 @@ public class RESTServer {
 		}
     });								
 	}
+	
+	private void getResultsFromAuthorSearch() {
+		get("/api/results/search/author/:keyword", (req, res) -> {
+
+			String index = req.params(":keyword");
+			
+			if(index.length()>1){
+				return cache.recordsFromAuthorName(index);
+			}else{
+				return new JSONObject().put("results", new JSONObject());
+			}
+	    });								
+		}
+	
 }

@@ -9,7 +9,7 @@ public class RESTServerMain {
 	
 	public static void main(String[] args) {
 		
-		RESTServer server = new RESTServer(true);
+		RESTServer server = new RESTServer(true, true);
 		
 	}
 	

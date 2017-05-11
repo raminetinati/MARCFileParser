@@ -3,6 +3,7 @@ package com.ramine.loc.objects.MARC;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import com.ramine.loc.operations.FileOperations;
 
@@ -13,13 +14,15 @@ public class MARCCache {
 
 	
 	HashMap<String, MARCRecord> recordsMap;
-	
+	HashMap<String, ArrayList<MARCRecord>> recordsMap_Authors;
+
 	ArrayList<MARCRecord> records;
 	
 	public MARCCache() {
 		
 		recordsMap = new HashMap<>();
 		records = new ArrayList<>();
+		recordsMap_Authors = new HashMap<>();
 	}
 	
 	public ArrayList<MARCRecord> getRecords() {
@@ -41,6 +44,10 @@ public class MARCCache {
 		}
 	}
 	
+	public HashMap<String, ArrayList<MARCRecord>> getRecordsMap_Authors() {
+		return recordsMap_Authors;
+	}
+	
 	
 	
 	public void indexCachedRecords(){
@@ -52,7 +59,32 @@ public class MARCCache {
 			for(MARCDataField df : rcd.datafields){
 				if(df.tag.equals("260")){
 					
+					for(MARCDataFieldSubField sf : df.subfields){
+						if(sf.code.equals("c")){
+							
+							//System.out.println("Date:"+sf.content.replace(".", ""));
+
+									
+						}
+					}
 					
+				}
+				if(df.tag.equals("100")){
+					
+					for(MARCDataFieldSubField sf : df.subfields){
+						if(sf.code.equals("a")){
+							String author = sf.content;
+							System.out.println("Author:"+sf.content);
+							if(recordsMap_Authors.containsKey(author)){
+								recordsMap_Authors.get(author).add(rcd);
+							}else{
+								ArrayList<MARCRecord> reco= new ArrayList<>();
+								reco.add(rcd);
+								recordsMap_Authors.put(author, reco);
+							}
+									
+						}
+					}
 					
 				}
 			}
@@ -148,7 +180,41 @@ public class MARCCache {
 	return toRet;
 	
 }
+
+	public Object recordsFromAuthorName(String keyword) {
+
+		JSONObject toRet = new JSONObject();
+		
+		JSONObject query = new JSONObject();
+		query.put("type", "queryKeyword");
+		query.put("param", "keyword");
+		query.put("paramVal", keyword);
 	
+		int cnt = 0;
+		if(keyword.length()>1){
 	
+			JSONArray res = new JSONArray();
+			for(Entry<String, ArrayList<MARCRecord>> rcd : recordsMap_Authors.entrySet()){
+				
+				if(rcd.getKey().toLowerCase().contains(keyword.toLowerCase())){
+					
+					for(MARCRecord mrd: rcd.getValue()){
+						res.add(mrd.jsonRepresentation);
+						cnt++;
+					}
+				}
+		}
+		
+		
+		query.put("resultsReturned", cnt);
+
+		toRet.put("query", query);
+
+		toRet.put("results", res);
+		}
+			
+		return toRet;
+
+	}
 	
 }

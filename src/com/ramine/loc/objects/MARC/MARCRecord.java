@@ -109,7 +109,7 @@ public class MARCRecord {
 		JSONArray dList = new JSONArray();
 		for(MARCDataField itm : datafields){
 			
-			JSONObject dataF = new JSONObject();
+			JSONObject dataF 			= new JSONObject();
 			
 			dataF.put("tag", itm.tag);
 			dataF.put("ind1", itm.ind1);
