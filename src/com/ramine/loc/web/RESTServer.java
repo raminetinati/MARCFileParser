@@ -40,6 +40,7 @@ public class RESTServer {
 		getResultsFromIndx();
 		getResultsFromKeywordSearch();
 		getResultsFromAuthorSearch();
+		getResultsFromAuthorYearSearch();
 	}
 	
 	
@@ -94,6 +95,19 @@ public class RESTServer {
 			
 			if(index.length()>1){
 				return cache.recordsFromAuthorName(index);
+			}else{
+				return new JSONObject().put("results", new JSONObject());
+			}
+	    });								
+		}
+	
+	
+	private void getResultsFromAuthorYearSearch() {
+		get("/api/results/search/author/year/:year", (req, res) -> {
+			
+			String index = req.params(":year");
+			if(index.length()>1){
+				return cache.recordsFromAuthorYear(index);
 			}else{
 				return new JSONObject().put("results", new JSONObject());
 			}

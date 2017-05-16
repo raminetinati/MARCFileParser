@@ -15,6 +15,8 @@ public class MARCCache {
 	
 	HashMap<String, MARCRecord> recordsMap;
 	HashMap<String, ArrayList<MARCRecord>> recordsMap_Authors;
+	HashMap<String, ArrayList<MARCRecord>> recordsMap_Year;
+
 
 	ArrayList<MARCRecord> records;
 	
@@ -23,6 +25,7 @@ public class MARCCache {
 		recordsMap = new HashMap<>();
 		records = new ArrayList<>();
 		recordsMap_Authors = new HashMap<>();
+		recordsMap_Year = new HashMap<>();
 	}
 	
 	public ArrayList<MARCRecord> getRecords() {
@@ -32,6 +35,11 @@ public class MARCCache {
 	public HashMap<String, MARCRecord> getRecordsMap() {
 		return recordsMap;
 	}
+	
+	public HashMap<String, ArrayList<MARCRecord>> getRecordsMap_Year() {
+		return recordsMap_Year;
+	}	
+	
 	
 	public Boolean loadCachedRecords(){
 
@@ -62,8 +70,15 @@ public class MARCCache {
 					for(MARCDataFieldSubField sf : df.subfields){
 						if(sf.code.equals("c")){
 							
-							//System.out.println("Date:"+sf.content.replace(".", ""));
-
+							String year = sf.content.replace(".", "");
+							//System.out.println("Date:"+);
+							if(recordsMap_Year.containsKey(year)){
+								recordsMap_Year.get(year).add(rcd);
+							}else{
+								ArrayList<MARCRecord> reco= new ArrayList<>();
+								reco.add(rcd);
+								recordsMap_Year.put(year, reco);
+							}
 									
 						}
 					}
@@ -76,11 +91,11 @@ public class MARCCache {
 							String author = sf.content;
 							System.out.println("Author:"+sf.content);
 							if(recordsMap_Authors.containsKey(author)){
-								recordsMap_Authors.get(author).add(rcd);
+								recordsMap_Year.get(author).add(rcd);
 							}else{
 								ArrayList<MARCRecord> reco= new ArrayList<>();
 								reco.add(rcd);
-								recordsMap_Authors.put(author, reco);
+								recordsMap_Year.put(author, reco);
 							}
 									
 						}
@@ -195,6 +210,43 @@ public class MARCCache {
 	
 			JSONArray res = new JSONArray();
 			for(Entry<String, ArrayList<MARCRecord>> rcd : recordsMap_Authors.entrySet()){
+				
+				if(rcd.getKey().toLowerCase().contains(keyword.toLowerCase())){
+					
+					for(MARCRecord mrd: rcd.getValue()){
+						res.add(mrd.jsonRepresentation);
+						cnt++;
+					}
+				}
+		}
+		
+		
+		query.put("resultsReturned", cnt);
+
+		toRet.put("query", query);
+
+		toRet.put("results", res);
+		}
+			
+		return toRet;
+
+	}
+
+	public Object recordsFromAuthorYear(String keyword) {
+
+		
+		JSONObject toRet = new JSONObject();
+		
+		JSONObject query = new JSONObject();
+		query.put("type", "queryKeyword");
+		query.put("param", "keyword");
+		query.put("paramVal", keyword);
+	
+		int cnt = 0;
+		if(keyword.length()>1){
+	
+			JSONArray res = new JSONArray();
+			for(Entry<String, ArrayList<MARCRecord>> rcd : recordsMap_Year.entrySet()){
 				
 				if(rcd.getKey().toLowerCase().contains(keyword.toLowerCase())){
 					
