@@ -5,6 +5,8 @@ import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import com.ctc.wstx.util.StringUtil;
+import com.ramine.loc.functions.StringUtils;
 import com.ramine.loc.objects.MARC.MARCControlField;
 import com.ramine.loc.objects.MARC.MARCDataField;
 import com.ramine.loc.objects.MARC.MARCDataFieldSubField;
@@ -293,9 +295,10 @@ public  static void loadJSONObjects(String dir, ArrayList<MARCRecord> records ) 
 			while ((currentLine = bufferedReader.readLine()) != null) {
 
 				MARCRecord recrd = new MARCRecord();
-				recrd.loadJSONFile((JSONObject) JSONSerializer.toJSON(currentLine));
-				records.add(recrd);
-				
+				if(StringUtils.isPureAscii(currentLine)){
+					recrd.loadJSONFile((JSONObject) JSONSerializer.toJSON(currentLine));
+					records.add(recrd);
+				}
 			}
 
 			

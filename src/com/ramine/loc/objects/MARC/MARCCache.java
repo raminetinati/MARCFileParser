@@ -91,11 +91,11 @@ public class MARCCache {
 							String author = sf.content;
 							System.out.println("Author:"+sf.content);
 							if(recordsMap_Authors.containsKey(author)){
-								recordsMap_Year.get(author).add(rcd);
+								recordsMap_Authors.get(author).add(rcd);
 							}else{
 								ArrayList<MARCRecord> reco= new ArrayList<>();
 								reco.add(rcd);
-								recordsMap_Year.put(author, reco);
+								recordsMap_Authors.put(author, reco);
 							}
 									
 						}
