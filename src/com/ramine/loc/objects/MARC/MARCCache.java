@@ -268,5 +268,22 @@ public class MARCCache {
 		return toRet;
 
 	}
+
+	public Object recordsPerYear() {
+
+		JSONObject years= new JSONObject();
+		
+		
+		for(Entry<String, ArrayList<MARCRecord>> rcd : recordsMap_Year.entrySet()){
+
+			
+			if(rcd.getKey().matches("^[0-9]+$")){
+				years.put(rcd.getKey(), rcd.getValue().size());
+			}
+		}
+		
+		return years;
+		
+	}
 	
 }

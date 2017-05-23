@@ -41,6 +41,7 @@ public class RESTServer {
 		getResultsFromKeywordSearch();
 		getResultsFromAuthorSearch();
 		getResultsFromAuthorYearSearch();
+		getResultsYearsSearch();
 	}
 	
 	
@@ -111,6 +112,14 @@ public class RESTServer {
 			}else{
 				return new JSONObject().put("results", new JSONObject());
 			}
+	    });								
+		}
+	
+	private void getResultsYearsSearch() {
+		get("/api/results/search/years/list", (req, res) -> {
+			
+			return cache.recordsPerYear();
+			
 	    });								
 		}
 	
